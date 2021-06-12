@@ -11,6 +11,10 @@ use Yii;
  * @property string $name
  * @property int|null $price
  * @property int|null $category_id
+ * @property int|null $created_at
+ * @property int|null $update_at
+ * @property int|null $created_by
+ * @property int|null $update_by
  */
 class Item extends \yii\db\ActiveRecord
 {
@@ -29,7 +33,7 @@ class Item extends \yii\db\ActiveRecord
     {
         return [
             [['name'], 'required'],
-            [['price', 'category_id'], 'integer'],
+            [['price', 'category_id', 'created_at', 'update_at', 'created_by', 'update_by'], 'integer'],
             [['name'], 'string', 'max' => 100],
         ];
     }
@@ -44,7 +48,10 @@ class Item extends \yii\db\ActiveRecord
             'name' => 'Name',
             'price' => 'Price',
             'category_id' => 'Category ID',
+            'created_at' => 'Created At',
+            'update_at' => 'Update At',
+            'created_by' => 'Created By',
+            'update_by' => 'Update By',
         ];
     }
-
 }

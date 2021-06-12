@@ -10,10 +10,15 @@ return [
     'id' => 'app-frontend',
     'name' => 'Toko Baru Zuhad',
     'defaultRoute' => 'item/index',
+    // 'catchAll' => ['item/index'],
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
+        'myComponent' => [
+            'class' => 'frontend\components\MyComponent',
+            'on EventHappen' => ['frontend\components\MyComponent', 'EventStatisticHandler'],
+        ],
         'request' => [
             'csrfParam' => '_csrf-frontend',
         ],

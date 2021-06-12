@@ -37,6 +37,7 @@ class ItemController extends Controller
     {
         $searchModel = new ItemSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        \yii::$app->myComponent->trigger('EventHappen');
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -52,6 +53,8 @@ class ItemController extends Controller
      */
     public function actionView($id)
     {
+        \yii::$app->myComponent->trigger('EventHappen');
+        
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -62,7 +65,60 @@ class ItemController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-   
+    public function actionCreate()
+    {
+        $model = new Item();
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+        return $this->render('create', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Updates an existing Item model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUpdate($id)
+    {
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+        return $this->render('update', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Deletes an existing Item model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionDelete($id)
+    {
+        $this->findModel($id)->delete();
+
+        return $this->redirect(['index']);
+    }
+
+    /**
+     * Finds the Item model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return Item the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
     protected function findModel($id)
     {
         if (($model = Item::findOne($id)) !== null) {
