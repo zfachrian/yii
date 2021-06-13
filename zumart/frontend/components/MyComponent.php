@@ -16,7 +16,7 @@ class MyComponent extends component
         echo "ini adalah komponen saya";
     }
 
-    public function EventStatisticHandler()
+    public static function EventStatisticHandler()
     {
         echo "<script>console.log('event terjadi')</script>";
 

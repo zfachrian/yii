@@ -37,7 +37,7 @@ class ItemController extends Controller
     {
         $searchModel = new ItemSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        \yii::$app->myComponent->trigger('EventHappen');
+        yii::$app->myComponent->trigger('EventHappen');
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -53,7 +53,7 @@ class ItemController extends Controller
      */
     public function actionView($id)
     {
-        \yii::$app->myComponent->trigger('EventHappen');
+        yii::$app->myComponent->trigger('EventHappen');
         
         return $this->render('view', [
             'model' => $this->findModel($id),

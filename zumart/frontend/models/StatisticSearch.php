@@ -4,12 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Item;
+use app\models\Statistic;
 
 /**
- * ItemSearch represents the model behind the search form of `app\models\Item`.
+ * StatisticSearch represents the model behind the search form of `app\models\Statistic`.
  */
-class ItemSearch extends Item
+class StatisticSearch extends Statistic
 {
     /**
      * {@inheritdoc}
@@ -17,8 +17,8 @@ class ItemSearch extends Item
     public function rules()
     {
         return [
-            [['id', 'price', 'category_id', 'created_at', 'update_at', 'created_by', 'update_by'], 'integer'],
-            [['name'], 'safe'],
+            [['Id'], 'integer'],
+            [['access_time', 'user_ip', 'user_host', 'path_info', 'query_string'], 'safe'],
         ];
     }
 
@@ -40,7 +40,7 @@ class ItemSearch extends Item
      */
     public function search($params)
     {
-        $query = Item::find();
+        $query = Statistic::find();
 
         // add conditions that should always apply here
 
@@ -58,16 +58,14 @@ class ItemSearch extends Item
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
-            'price' => $this->price,
-            'category_id' => $this->category_id,
-            'created_at' => $this->created_at,
-            'update_at' => $this->update_at,
-            'created_by' => $this->created_by,
-            'update_by' => $this->update_by,
+            'Id' => $this->Id,
+            'access_time' => $this->access_time,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name]);
+        $query->andFilterWhere(['like', 'user_ip', $this->user_ip])
+            ->andFilterWhere(['like', 'user_host', $this->user_host])
+            ->andFilterWhere(['like', 'path_info', $this->path_info])
+            ->andFilterWhere(['like', 'query_string', $this->query_string]);
 
         return $dataProvider;
     }
