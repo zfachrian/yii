@@ -3,19 +3,18 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\Item;
-use app\models\ItemSearch;
+use app\models\Customer;
+use app\models\User;
+use app\models\Order;
+use app\models\CustomerSearch;
 use yii\web\Controller;
-use yii\web\UploadFile;
-use yii\web\UploadedFile;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\helpers\Url;
 
 /**
- * ItemController implements the CRUD actions for Item model.
+ * CustomerController implements the CRUD actions for Customer model.
  */
-class ItemController extends Controller
+class CustomerController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -33,14 +32,13 @@ class ItemController extends Controller
     }
 
     /**
-     * Lists all Item models.
+     * Lists all Customer models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new ItemSearch();
+        $searchModel = new CustomerSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        yii::$app->myComponent->trigger('EventHappen');
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -49,50 +47,43 @@ class ItemController extends Controller
     }
 
     /**
-     * Displays a single Item model.
+     * Displays a single Customer model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionView($id)
     {
-        yii::$app->myComponent->trigger('EventHappen');
-        
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
     }
 
     /**
-     * Creates a new Item model.
+     * Creates a new Customer model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Item();
+        $model = new Customer();
+        $isUserLogin = User::findOne(\Yii::$app->user->id);
 
-        if ($model->load(Yii::$app->request->post())) {
-            $gambar = UploadedFile::getInstance($model, 'gambar');
-            if($model->validate()){
-                $model->save();
-                if(!empty($gambar)){
-                    $image_name = 'gambar_item_' . $model->id;
-                    $gambar->saveAs(Yii::getAlias('@frontend/web/img/') . $image_name .'.'. $gambar->extension);
-                    $model->gambar = $image_name .'.'. $gambar->extension;
-                    $model->save(FALSE);
-                }
+        if(is_null($isUserLogin->customer)){
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }else{
+                return $this->render('create', [
+                    'model' => $model,
+                ]);
             }
-            $model->save();
-            return $this->redirect(['view', 'id' => $model->id]);
-        }   
-        return $this->render('create', [
-            'model' => $model,
-        ]);
+        }
+        Yii::$app->session->setFlash('msg-error', 'Only one customer data for each user');
+        return $this->actionIndex();
     }
 
     /**
-     * Updates an existing Item model.
+     * Updates an existing Customer model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -102,22 +93,9 @@ class ItemController extends Controller
     {
         $model = $this->findModel($id);
 
-        $image_name = $model->gambar;
-        if ($model->load(Yii::$app->request->post())) {
-            $gambar = UploadedFile::getInstance($model, 'gambar');
-            if($model->validate()){
-                if(!empty($gambar)){
-                    $image_name = 'gambar_item_' . $model->id;
-                    $gambar->saveAs(Yii::getAlias('@frontend/web/img/') . $image_name .'.'. $gambar->extension);
-                    $model->gambar = $image_name .'.'. $gambar->extension;
-                }else{
-                    $model->gambar = $image_name;
-                }
-                $model->save();
-            }
-            $model->save();
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
-        }   
+        }
 
         return $this->render('update', [
             'model' => $model,
@@ -125,7 +103,7 @@ class ItemController extends Controller
     }
 
     /**
-     * Deletes an existing Item model.
+     * Deletes an existing Customer model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -139,23 +117,26 @@ class ItemController extends Controller
     }
 
     /**
-     * Finds the Item model based on its primary key value.
+     * Finds the Customer model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Item the loaded model
+     * @return Customer the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Item::findOne($id)) !== null) {
+        if (($model = Customer::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    public function actionViewGambar($nama){
-        $file = Yii::getAlias('@frontend/web/img/' . $nama);
-        return Yii::$app->response->sendFile($file, NULL, ['inline' => True]);
+    public function actionShowOrder(){
+        $data = Order::find();
+
+        return $this->render('show-order', [
+            'dataProvider' => $data,
+        ]);
     }
 }

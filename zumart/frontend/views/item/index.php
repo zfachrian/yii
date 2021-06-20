@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\ItemSearch */
@@ -31,9 +32,14 @@ $this->params['breadcrumbs'][] = $this->title;
             'price',
             'category_id',
             'created_at',
-            //'update_at',
-            //'created_by',
-            //'update_by',
+            [
+                'class' => 'yii\grid\DataColumn',
+                'header' => 'Gambar',
+                'format' => 'raw',
+                'value' => function($data){
+                    return "<img width='104px' src='".Url::to(['item/view-gambar', 'nama'=>$data->gambar])."'>";
+                }
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

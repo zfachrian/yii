@@ -3,19 +3,16 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\Item;
-use app\models\ItemSearch;
+use app\models\Order;
+use app\models\OrderSearch;
 use yii\web\Controller;
-use yii\web\UploadFile;
-use yii\web\UploadedFile;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\helpers\Url;
 
 /**
- * ItemController implements the CRUD actions for Item model.
+ * OrderController implements the CRUD actions for Order model.
  */
-class ItemController extends Controller
+class OrderController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -33,14 +30,13 @@ class ItemController extends Controller
     }
 
     /**
-     * Lists all Item models.
+     * Lists all Order models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new ItemSearch();
+        $searchModel = new OrderSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        yii::$app->myComponent->trigger('EventHappen');
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -49,50 +45,38 @@ class ItemController extends Controller
     }
 
     /**
-     * Displays a single Item model.
+     * Displays a single Order model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionView($id)
     {
-        yii::$app->myComponent->trigger('EventHappen');
-        
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
     }
 
     /**
-     * Creates a new Item model.
+     * Creates a new Order model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Item();
+        $model = new Order();
 
-        if ($model->load(Yii::$app->request->post())) {
-            $gambar = UploadedFile::getInstance($model, 'gambar');
-            if($model->validate()){
-                $model->save();
-                if(!empty($gambar)){
-                    $image_name = 'gambar_item_' . $model->id;
-                    $gambar->saveAs(Yii::getAlias('@frontend/web/img/') . $image_name .'.'. $gambar->extension);
-                    $model->gambar = $image_name .'.'. $gambar->extension;
-                    $model->save(FALSE);
-                }
-            }
-            $model->save();
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
-        }   
+        }
+
         return $this->render('create', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Updates an existing Item model.
+     * Updates an existing Order model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -102,22 +86,9 @@ class ItemController extends Controller
     {
         $model = $this->findModel($id);
 
-        $image_name = $model->gambar;
-        if ($model->load(Yii::$app->request->post())) {
-            $gambar = UploadedFile::getInstance($model, 'gambar');
-            if($model->validate()){
-                if(!empty($gambar)){
-                    $image_name = 'gambar_item_' . $model->id;
-                    $gambar->saveAs(Yii::getAlias('@frontend/web/img/') . $image_name .'.'. $gambar->extension);
-                    $model->gambar = $image_name .'.'. $gambar->extension;
-                }else{
-                    $model->gambar = $image_name;
-                }
-                $model->save();
-            }
-            $model->save();
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
-        }   
+        }
 
         return $this->render('update', [
             'model' => $model,
@@ -125,7 +96,7 @@ class ItemController extends Controller
     }
 
     /**
-     * Deletes an existing Item model.
+     * Deletes an existing Order model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -139,23 +110,18 @@ class ItemController extends Controller
     }
 
     /**
-     * Finds the Item model based on its primary key value.
+     * Finds the Order model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Item the loaded model
+     * @return Order the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Item::findOne($id)) !== null) {
+        if (($model = Order::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
-    }
-
-    public function actionViewGambar($nama){
-        $file = Yii::getAlias('@frontend/web/img/' . $nama);
-        return Yii::$app->response->sendFile($file, NULL, ['inline' => True]);
     }
 }

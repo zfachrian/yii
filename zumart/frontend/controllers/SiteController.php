@@ -3,6 +3,7 @@ namespace frontend\controllers;
 
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\VerifyEmailForm;
+use app\models\Item;
 use Yii;
 use yii\base\InvalidArgumentException;
 use yii\web\BadRequestHttpException;
@@ -14,6 +15,7 @@ use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+use yii\data\Pagination;
 
 /**
  * Site controller
@@ -74,7 +76,22 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $query = Item::find();
+
+        if(isset($_POST['category']) && !empty($_POST['category']) && $_POST['category'] != 0){
+            $query->andWhere(['=', 'category_id', $_POST['category']]);
+        }
+
+        $count = $query->count();
+        $pagination = new Pagination(['totalCount' => $count, 'defaultPageSize' => 3]);
+        $models = $query->offset($pagination->offset)
+                ->limit($pagination->limit)
+                ->all();
+        return $this->render('index',[
+            'models' => $models,
+            'pagination' => $pagination,
+        ]);
+        //return $this->render('index');
     }
 
     /**

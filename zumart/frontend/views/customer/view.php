@@ -2,17 +2,16 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
-use yii\helpers\Url;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Item */
+/* @var $model app\models\Customer */
 
-$this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Items', 'url' => ['index']];
+$this->title = $model->id;
+$this->params['breadcrumbs'][] = ['label' => 'Customers', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="item-view">
+<div class="customer-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -31,16 +30,9 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'name',
-            'price',
-            'category_id',
-            [
-                'label' => 'Gambar',
-                'format' => 'html',
-                'value' => function($data){
-                    return "<img width='104px' src='".Url::to(['item/view-gambar', 'nama'=>$data->gambar])."'>";
-                }
-            ],
+            'nama',
+            'email:email',
+            'user_id',
         ],
     ]) ?>
 
